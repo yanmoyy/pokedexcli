@@ -8,7 +8,7 @@ import (
 func commandMapf(cfg *config, args ...string) error {
 	locationsResp, err := cfg.pokeapiClient.ListLocations(cfg.nextLocationsURL)
 	if err != nil {
-		return fmt.Errorf("ListLocations: %w", err)
+		return err
 	}
 
 	cfg.nextLocationsURL = locationsResp.Next
@@ -27,7 +27,7 @@ func commandMapb(cfg *config, args ...string) error {
 
 	locationResp, err := cfg.pokeapiClient.ListLocations(cfg.prevLocationsURL)
 	if err != nil {
-		return fmt.Errorf("ListLocations: %w", err)
+		return err
 	}
 
 	cfg.nextLocationsURL = locationResp.Next

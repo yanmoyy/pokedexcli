@@ -10,7 +10,7 @@ import (
 // Client -
 type Client struct {
 	httpClient http.Client
-	cache      *pokecache.Cache
+	cache      pokecache.Cache
 }
 
 // NewClient -
