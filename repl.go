@@ -5,11 +5,18 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/yanmoyy/pokedexcli/internal/pokeapi"
 )
 
-func startRepl() {
+type config struct {
+	pokeapiClient    pokeapi.Client
+	nextLocationsURL *string
+	prevLocationsURL *string
+}
+
+func startRepl(cfg *config) {
 	reader := bufio.NewScanner(os.Stdin)
-	cfg := &config{}
 	for {
 		fmt.Print("Pokedex > ")
 		reader.Scan()
@@ -47,11 +54,6 @@ type cliCommand struct {
 	callback    func(*config) error
 }
 
-type config struct {
-	Next     string
-	Previous string
-}
-
 func getCommands() map[string]cliCommand {
 	return map[string]cliCommand{
 		"help": {
@@ -59,20 +61,20 @@ func getCommands() map[string]cliCommand {
 			description: "Displays a help message",
 			callback:    commandHelp,
 		},
-		"exit": {
-			name:        "exit",
-			description: "Exit the Pokedex",
-			callback:    commandExit,
-		},
 		"map": {
 			name:        "map",
 			description: "Displays next 20 location areas in the Pokemon world.",
-			callback:    commandMap,
+			callback:    commandMapf,
 		},
 		"mapb": {
 			name:        "map_back",
 			description: "Displays previous 20 location areas in the Pokemon world.",
 			callback:    commandMapb,
+		},
+		"exit": {
+			name:        "exit",
+			description: "Exit the Pokedex",
+			callback:    commandExit,
 		},
 	}
 }

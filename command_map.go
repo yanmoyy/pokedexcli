@@ -1,51 +1,40 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-
-	"github.com/yanmoyy/pokedexcli/api"
 )
 
-const apiUrl = "https://pokeapi.co/api/v2/location-area"
-
-func commandMap(cfg *config) error {
-	url := cfg.Next
-	if url == "" {
-		url = apiUrl
-	}
-	batch, err := api.FetchLocationAreasBatch(url)
+func commandMapf(cfg *config) error {
+	locationsResp, err := cfg.pokeapiClient.ListLocations(cfg.nextLocationsURL)
 	if err != nil {
-		return fmt.Errorf("FetchLocationAreasBatch: %w", err)
+		return fmt.Errorf("ListLocations: %w", err)
 	}
-	if batch.Next != "" {
-		cfg.Next = batch.Next
-	}
-	if batch.Previous != "" {
-		cfg.Previous = batch.Previous
-	}
-	for _, area := range batch.Results {
-		fmt.Println(area.Name)
+
+	cfg.nextLocationsURL = locationsResp.Next
+	cfg.prevLocationsURL = locationsResp.Previous
+
+	for _, loc := range locationsResp.Results {
+		fmt.Println(loc.Name)
 	}
 	return nil
 }
 
 func commandMapb(cfg *config) error {
-	url := cfg.Previous
-	if url == "" {
-		url = apiUrl
+	if cfg.prevLocationsURL == nil {
+		return errors.New("you're on the first page")
 	}
-	batch, err := api.FetchLocationAreasBatch(url)
+
+	locationResp, err := cfg.pokeapiClient.ListLocations(cfg.prevLocationsURL)
 	if err != nil {
-		return fmt.Errorf("FetchLocationAreasBatch: %w", err)
+		return fmt.Errorf("ListLocations: %w", err)
 	}
-	if batch.Next != "" {
-		cfg.Next = batch.Next
-	}
-	if batch.Previous != "" {
-		cfg.Previous = batch.Previous
-	}
-	for _, area := range batch.Results {
-		fmt.Println(area.Name)
+
+	cfg.nextLocationsURL = locationResp.Next
+	cfg.prevLocationsURL = locationResp.Previous
+
+	for _, loc := range locationResp.Results {
+		fmt.Println(loc.Name)
 	}
 	return nil
 }
