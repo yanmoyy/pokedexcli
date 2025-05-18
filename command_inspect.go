@@ -15,8 +15,7 @@ func commandInspect(cfg *config, args ...string) error {
 	name := args[0]
 	pokemon, ok := cfg.caughtPokemon[name]
 	if !ok {
-		fmt.Println("You have not caught that pokemon")
-		return nil
+		return errors.New("You have not caught that pokemon")
 	}
 	printPokemon(pokemon)
 	return nil
